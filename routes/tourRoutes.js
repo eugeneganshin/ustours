@@ -3,12 +3,13 @@ const tourControl = require('../controllers/tourController');
 
 const router = express.Router();
 
-router.param('id', tourControl.checkID);
+// router.param('id', tourControl.checkID);
 
+// eslint-disable-next-line prettier/prettier
 router
   .route('/')
   .get(tourControl.getAllTours)
-  .post(tourControl.checkBody, tourControl.createTour);
+  .post(tourControl.createTour);
 
 router
   .route('/:id')
