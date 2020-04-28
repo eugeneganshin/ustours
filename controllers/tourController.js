@@ -1,8 +1,8 @@
 const Tour = require('../models/tourModel');
 
 /**
- *TODO: write a documentation to specify which features a user can query the API
- *
+ * Filtering, sorting, field limiter and pagination for request.
+ * TODO: write a documentation to specify which features a user can query the API
  */
 exports.getAllTours = async (req, res, next) => {
   try {
@@ -26,13 +26,28 @@ exports.getAllTours = async (req, res, next) => {
       query = query.sort('-createdAt');
     }
 
-    // Field limiter.
+    // 3) Field limiter.
     if (req.query.fields) {
       const fields = req.query.fields.split(',').join(' ');
       query = query.select(fields);
     } else {
       query = query.select('-__v');
     }
+
+    // 4) Pagination.
+    // page=2&limit=10 === 1-10 for page 1, 11-20 for page 2, etc.
+    // If a user request page 3 we would have to skip 20 results, etc.
+    const page = req.query.page * 1 || 1; // convert a string to a number str * 1
+    const limit = req.query.limit * 1 || 100;
+    const skip = (page - 1) * limit;
+
+    query = query.skip(skip).limit(limit);
+
+    if (req.query.page) {
+      const numTours = await Tour.countDocuments();
+      if (skip >= numTours) throw new Error('This page does not exist.');
+    }
+
     // EXECUTE QUERY
     const tours = await query;
 
