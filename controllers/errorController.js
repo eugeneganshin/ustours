@@ -1,6 +1,14 @@
 // new AppError(`Can't find ${req.originalUrl} on this server.`);
 const AppError = require('../utils/appError');
 
+const handleJWTError = () => {
+  return new AppError('Invalid token. Please log in again!', 401);
+};
+
+const handleJWTExpired = () => {
+  return new AppError('Your token has expired. Please log in again!', 401);
+};
+
 const handleCastErrorDb = (err) => {
   const message = `Invalid ${err.path}: ${err.value}.`;
   return new AppError(message, 400);
@@ -49,7 +57,6 @@ const sendErrorProduction = (err, res) => {
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
-
   if (process.env.NODE_ENV === 'development') {
     sendErrorForDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
@@ -58,6 +65,9 @@ module.exports = (err, req, res, next) => {
     if (error.code === 1100) error = handleDuplicateErrorDB(error);
     if (error.name === 'ValidationError')
       error = handleValidationErrorDB(error);
+    if (error.name === 'JsonWebTokenError') error = handleJWTError(error);
+    if (error.name === 'JsonWebTokenError') error = handleJWTError();
+    if (error.name === 'TokenExpiredError') error = handleJWTExpired();
 
     sendErrorProduction(error, res);
   }
