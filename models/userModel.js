@@ -46,6 +46,11 @@ const userSchema = mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
   photo: {
     type: String,
     trim: true,
@@ -96,6 +101,11 @@ userSchema.methods.createPasswordResetToken = function () {
   // console.log({ resetToken }, this.passwordResetToken);
   return resetToken;
 };
+
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
+  next();
+});
 
 const User = mongoose.model('User', userSchema);
 
