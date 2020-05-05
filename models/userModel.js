@@ -23,18 +23,19 @@ const userSchema = mongoose.Schema({
   password: {
     type: String,
     require: [true, 'Please provide a password.'],
-    maxlengh: 8,
+    minlength: 8,
     select: false,
   },
   passwordConfirm: {
     type: String,
-    require: [true, 'Please confirm your password.'],
+    required: [true, 'Please confirm your password'],
+    minlength: 8,
     validate: {
-      // works on CREATE and SAVE only
+      // This only works on CREATE and SAVE!!!
       validator: function (el) {
         return el === this.password;
       },
-      message: 'Paswords are not the same.',
+      message: 'Passwords are not the same!',
     },
   },
   role: {
@@ -57,6 +58,13 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 14);
   this.passwordConfirm = undefined;
 
+  next();
+});
+
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000;
   next();
 });
 
