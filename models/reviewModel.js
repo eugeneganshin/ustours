@@ -104,6 +104,9 @@ reviewSchema.post(/^findOneAnd/, async function (next) {
   await this.r.constructor.calcAverageRatings(this.r.tour);
 });
 
+// user can post a review to same tour only once
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 const Review = mongoose.model('Review', reviewSchema);
 
 module.exports = Review;

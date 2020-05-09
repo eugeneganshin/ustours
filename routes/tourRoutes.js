@@ -20,6 +20,11 @@ router
     authController.restrict('admin', 'lead-guide', 'guide'),
     tourControl.getMonthlyPlan
   );
+router.route('/distances/:latlng/unit/:unit').get(tourControl.getDistances);
+// coords near you
+router
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(tourControl.getToursWithin);
 
 router
   .route('/')
