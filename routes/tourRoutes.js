@@ -13,30 +13,35 @@ router
   .get(tourControl.aliasTopTours, tourControl.getAllTours);
 
 router.route('/tour-stats').get(tourControl.getTourStats);
-router.route('/monthly-plan/:year').get(tourControl.getMonthlyPlan);
+router
+  .route('/monthly-plan/:year')
+  .get(
+    authController.protect,
+    authController.restrict('admin', 'lead-guide', 'guide'),
+    tourControl.getMonthlyPlan
+  );
 
-// eslint-disable-next-line prettier/prettier
 router
   .route('/')
   .get(tourControl.getAllTours)
-.post(tourControl.createTour);
+  .post(
+    authController.protect,
+    authController.restrict('admin', 'lead-guide'),
+    tourControl.createTour
+  );
 
 router
   .route('/:id')
   .get(tourControl.getTour)
-  .patch(tourControl.updateTour)
+  .patch(
+    authController.protect,
+    authController.restrict('admin', 'lead-guide'),
+    tourControl.updateTour
+  )
   .delete(
     authController.protect,
     authController.restrict('admin', 'lead-guide'),
     tourControl.deleteTour
   );
-
-// router
-//   .route('/:tourId/reviews')
-//   .post(
-//     authController.protect,
-//     authController.restrict('user'),
-//     reviewController.createReview
-//   );
 
 module.exports = router;

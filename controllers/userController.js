@@ -13,6 +13,11 @@ const filterObj = (obj, ...allowed) => {
   return newObj;
 };
 
+exports.getMe = catchAsync(async (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+});
+
 exports.updateMe = catchAsync(async (req, res, next) => {
   console.log(req.body);
   // 1) Create error if user updates password.
@@ -57,8 +62,7 @@ exports.createUser = (req, res) => {
   });
 };
 
-// Do not update password with this.
 exports.getAllUsers = factory.getAll(User);
 exports.getUser = factory.getOne(User);
-exports.deleteUser = factory.deleteOne(User);
-exports.updateUser = factory.updateOne(User);
+exports.deleteUser = factory.deleteOne(User); // do not update password with this
+exports.updateUser = factory.updateOne(User); // do not update password with this

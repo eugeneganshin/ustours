@@ -8,23 +8,27 @@ const router = express.Router();
 
 router.post('/signup', authController.signUp);
 router.post('/login', authController.login);
-
-router.patch(
-  '/updateMyPassword',
-  authControl.protect,
-  authControl.updatePassword
-);
-
-router.patch('/updateMe', authControl.protect, userControl.updateMe);
-router.delete('/deleteMe', authControl.protect, userControl.deleteMe);
-
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
+
+// protects all the routes below
+router.use(authController.protect);
+
+// password
+router.patch('/updateMyPassword', authControl.updatePassword);
+
+// user
+router.patch('/updateMe', userControl.updateMe);
+router.delete('/deleteMe', userControl.deleteMe);
+router.get('/me', userControl.getMe, userControl.getUser);
+
+router.use(authController.restrict('admin'));
 
 // eslint-disable-next-line prettier/prettier
 router
   .route('/')
-  .get(authControl.protect, userControl.getAllUsers)
+  .get(userControl.getAllUsers)
+  .post(userControl.createUser);
 
 router
   .route('/:id')
