@@ -25,7 +25,6 @@ router.patch('/resetPassword/:token', authController.resetPassword);
 router
   .route('/')
   .get(authControl.protect, userControl.getAllUsers)
-  .post(userControl.createUsers);
 
 router
   .route('/:id')
