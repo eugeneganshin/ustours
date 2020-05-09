@@ -72,6 +72,7 @@ exports.getOne = (Model, populateOpt) =>
  */
 exports.getAll = (Model) =>
   catchAsync(async (req, res, next) => {
+    // ===================================================== //
     // only the reviews when the tour matches the id will be found
     // if there is a tour id then this object will be found
     // if there is a regular API without nested routes then all reviews will be found
@@ -87,6 +88,7 @@ exports.getAll = (Model) =>
       .paginate();
 
     const doc = await features.query;
+    // const doc = await features.query.explain(); // performance
 
     res.status(200).json({
       status: 'success',

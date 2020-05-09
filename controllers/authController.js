@@ -58,7 +58,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
 
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
-  console.log(req.body);
+
   // 1) IF email and password actually exist
   if (!email || !password) {
     return next(new AppError('Please provide email and password!', 400));
@@ -98,7 +98,6 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // 3) Check if user still exists.
   const currentUser = await User.findById(decoded.id);
-  console.log(currentUser);
   if (!currentUser) {
     return next(
       new AppError(
@@ -134,7 +133,6 @@ exports.restrict = (...roles) => {
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   // 1) Get user based on posted email.
 
-  console.log(req.body);
   const user = await User.findOne({ email: req.body.email });
 
   if (!user) {
