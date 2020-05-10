@@ -27,13 +27,11 @@ const reviewSchema = new mongoose.Schema(
         required: [true, 'Review must belong to a tour.'],
       },
     ],
-    user: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: 'User',
-        required: [true, 'Review must belong to a user.'],
-      },
-    ],
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      required: [true, 'Review must belong to a user.'],
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -95,7 +93,7 @@ reviewSchema.post('save', function () {
 // to be able to update ratings of reviews
 reviewSchema.pre(/^findOneAnd/, async function (next) {
   this.r = await this.findOne();
-  console.log(this.r);
+
   next();
 });
 
