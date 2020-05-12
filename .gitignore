@@ -146,4 +146,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+#Dev-data directory
+dev-data/
+
 # End of https://www.gitignore.io/api/node,windows,visualstudiocode
