@@ -44,22 +44,22 @@ if (formUserData) {
   })
 }
 
-// if (formUserSettings) {
-//   formUserSettings.addEventListener('submit', async e => {
-//     e.preventDefault()
+if (formUserSettings) {
+  formUserSettings.addEventListener('submit', async e => {
+    e.preventDefault()
 
-//     document.querySelector('.btn--save-password').textContent = 'Updating...'
+    document.querySelector('.btn--save-password').textContent = 'Updating...'
 
-//     const passwordCurrent = document.querySelector('#password-current').value
-//     const password = document.querySelector('#password').value
-//     const passwordConfirm = document.querySelector('#password-confirm').value
+    const passwordCurrent = document.querySelector('#password-current').value
+    const password = document.querySelector('#password').value
+    const passwordConfirm = document.querySelector('#password-confirm').value
     
-//     await updatePassword(passwordCurrent, password, passwordConfirm)
+    await updateSettings({passwordCurrent, password, passwordConfirm}, 'password')
 
-//     document.querySelector('#password-current').value = ''
-//     document.querySelector('#password').value = ''
-//     document.querySelector('#password-confirm').value = ''
+    document.querySelector('#password-current').value = ''
+    document.querySelector('#password').value = ''
+    document.querySelector('#password-confirm').value = ''
 
-//     document.querySelector('.btn--save-password').textContent = 'Save password'
-//   })
-// }
+    document.querySelector('.btn--save-password').textContent = 'Save password'
+  })
+}
