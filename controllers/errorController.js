@@ -27,40 +27,68 @@ const handleValidationErrorDB = (err) => {
   return new AppError(message, 400);
 };
 
-const sendErrorForDev = (err, res) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    error: err,
-    message: err.message,
-    stack: err.stack,
+const sendErrorForDev = (err, req, res) => {
+  // API
+  if (req.originalUrl.startsWith('/api')) {
+    console.error('ERROR API', err);
+    return res.status(err.statusCode).json({
+      status: err.status,
+      error: err,
+      message: err.message,
+      stack: err.stack,
+    });
+  }
+  // ====================================================//
+  // RENDERED WEBSITE
+  console.error('ERROR RENDER', err);
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong!',
+    msg: err.message,
   });
 };
 
-const sendErrorProduction = (err, res) => {
-  // Operational Error that we trust: send msg to the client.
-  if (err.isOperational) {
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message,
-    });
-    // Programming or unknown error: don't leak error details.
-  } else {
-    console.error('ERROR', err);
+const sendErrorProduction = (err, req, res) => {
+  // API
+  if (req.originalUrl.startsWith('/api')) {
+    // Operational Error that we trust: send msg to the client.
+    if (err.isOperational) {
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message,
+      });
+      // Programming or unknown error: don't leak error details.
+    }
 
-    res.status(500).json({
+    return res.status(500).json({
       status: 'Error',
       message: 'Something is very wrong!',
     });
   }
+  // ====================================================//
+  // RENDERED WEBSITE
+  if (err.isOperational) {
+    return res.status(err.statusCode).render('error', {
+      title: 'Something went wrong!',
+      msg: err.message,
+    });
+    // Programming or unknown error: don't leak error details.
+  }
+
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong',
+    msg: 'Please try again!',
+  });
 };
 
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
   if (process.env.NODE_ENV === 'development') {
-    sendErrorForDev(err, res);
+    sendErrorForDev(err, req, res);
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...err };
+    error.message = err.message;
+
     if (error.name === 'CastError') error = handleCastErrorDb(error);
     if (error.code === 1100) error = handleDuplicateErrorDB(error);
     if (error.name === 'ValidationError')
@@ -69,6 +97,6 @@ module.exports = (err, req, res, next) => {
     if (error.name === 'JsonWebTokenError') error = handleJWTError();
     if (error.name === 'TokenExpiredError') error = handleJWTExpired();
 
-    sendErrorProduction(error, res);
+    sendErrorProduction(error, req, res);
   }
 };

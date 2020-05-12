@@ -38,6 +38,15 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 
+exports.logout = catchAsync(async (req, res, next) => {
+  res.cookie('jwt', 'logged out', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json({ status: 'success' });
+});
+
 exports.signUp = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -74,6 +83,36 @@ exports.login = catchAsync(async (req, res, next) => {
   // 3) If everything is correct, send token back to client
   createSendToken(user, 200, res);
 });
+
+// Only for rendered pages, no errors!
+exports.isLoggedIn = async (req, res, next) => {
+  if (req.cookies.jwt) {
+    try {
+      // 1) Verification.
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET
+      );
+
+      // 2) Check if user still exists.
+      const currentUser = await User.findById(decoded.id);
+      if (!currentUser) {
+        return next();
+      }
+      // 3) Check if user changed password after the token was issued.;
+      if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+
+      // There is a logged in user
+      res.locals.user = currentUser;
+      return next();
+    } catch (error) {
+      return next();
+    }
+  }
+  next();
+};
 
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Get the token and check if its there.
@@ -114,6 +153,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // 5) Grant access to protected route.
   req.user = currentUser;
+  res.locals.user = currentUser;
   next();
 });
 
