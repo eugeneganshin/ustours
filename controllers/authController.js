@@ -55,19 +55,11 @@ exports.signUp = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
   });
-  const url = `${req.protocol}://${req.get('host')}/me`;
 
+  // const url = `${req.protocol}://${req.get('host')}/me`;
   // await new Email(newUser, url).sendWelcome(); fix for google
 
-  const token = signToken(newUser._id);
-
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  createSendToken(newUser, 200, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -156,7 +148,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
 
   // 5) Grant access to protected route.
-  req.user = currentUser;
+  req.user = currentUser; // each route with .protect will have req.user
   res.locals.user = currentUser;
   next();
 });

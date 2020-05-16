@@ -52,6 +52,7 @@ exports.getOne = (Model, populateOpt) =>
   catchAsync(async (req, res, next) => {
     let query = Model.findById(req.params.id);
     if (populateOpt) query = query.populate(populateOpt);
+
     const doc = await query;
 
     if (!doc) {
@@ -78,6 +79,7 @@ exports.getAll = (Model) =>
     // if there is a regular API without nested routes then all reviews will be found
     // to allow for nested GET reviews on tour (hack)
     let filter;
+    console.log(req.params);
     if (req.params.tourId) filter = { tour: req.params.tourId };
     // ===================================================== //
 

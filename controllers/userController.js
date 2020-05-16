@@ -42,7 +42,6 @@ exports.uploadUserPhoto = upload.single('photo');
 // Sharp middleware. Resize image before uploading to app.
 exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
-  console.log(req.file);
 
   req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
 
@@ -61,8 +60,6 @@ const filterObj = (obj, ...allowedFields) => {
   Object.keys(obj).forEach((el) => {
     if (allowedFields.includes(el)) newObj[el] = obj[el];
   });
-  console.log(obj);
-  console.log(newObj);
   return newObj;
 };
 

@@ -4,7 +4,6 @@ import { showAlert } from './alerts'
 
 export const login = async (email, password, form) => {
   try {
-    console.log('s')
     const res = await axios({
       method: 'POST',
       url: 'http://127.0.0.1:4000/api/v1/users/login',
@@ -18,7 +17,7 @@ export const login = async (email, password, form) => {
     showAlert('success', 'Logged in successfully!')
     window.setTimeout(()=>{
       location.assign('/')
-    }, 1500)
+    }, 1000)
   }
 
   } catch (error) {
