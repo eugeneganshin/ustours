@@ -11,8 +11,6 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   // 1) Get currently booked tour.
   const tour = await Tour.findById(req.params.tourID);
   // 2) Create checkout session.
-  console.log('slug========');
-  console.log(req.params);
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
 
@@ -45,7 +43,6 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
 exports.createBookingCheckout = catchAsync(async (req, res, next) => {
   // Temporary solution, UNSECURE.
   // everyone can make bookings without paying!
-  // console.log(req.query);
   const { tour, user, price } = req.query;
 
   if (!tour && !user && !price) return next();

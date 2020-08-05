@@ -79,7 +79,6 @@ exports.getAll = (Model) =>
     // if there is a regular API without nested routes then all reviews will be found
     // to allow for nested GET reviews on tour (hack)
     let filter;
-    console.log(req.params);
     if (req.params.tourId) filter = { tour: req.params.tourId };
     // ===================================================== //
 
