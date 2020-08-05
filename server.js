@@ -27,10 +27,9 @@ mongoose
 
 const app = require('./app');
 
-// eslint-disable-next-line no-multi-assign
-const port = (process.env.PORT = 4000 || 3000);
+const PORT = process.env.PORT || 4000;
 
-const server = app.listen(port, () => console.log('http://localhost:4000/'));
+const server = app.listen(PORT, () => console.log('http://localhost:4000/'));
 
 process.on('unhandledRejection', (err) => {
   console.log(err.name, err.message);
